@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="te">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AV Studio Pro Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+        }
+
+        body.dark-mode {
+            --bg: #121212;
+            --card: #1e1e1e;
+            --text: #e0e0e0;
+            --light: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: var(--light);
+            color: var(--dark);
+            transition: 0.3s;
+        }
+
+        header {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 15px;
+            text-align: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 1px;
+        }
+
+        .dark-toggle {
+            position: absolute;
+            right: 20px;
+            top: 25px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .container {
+            padding: 20px;
+            margin-bottom: 80px;
+        }
+
+        .sticky-toggles {
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: var(--light);
+            padding: 5px 0;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: 0.2s;
+        }
+
+        .btn-staff {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-kit {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .collapsible-form {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--primary);
+        }
+
+        .stat-card h3 {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .input-group {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #fafafa;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: #f1f2f6;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            margin: 0;
+            color: #333;
+        }
+
+        .checkbox-group input {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn-main {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .order-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .wa-btn {
+            background: #25D366;
+            color: white;
+        }
+
+        .pdf-btn {
+            background: #e67e22;
+            color: white;
+        }
+
+        .edit-btn {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .del-btn {
+            background: #fee;
+            color: var(--danger);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.1);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            border: none;
+            background: none;
+            text-align: center;
+            color: #a4b0be;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .active-section {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .history-card {
+            background: #f1f2f6;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 13px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        #calendar {
+            background: white;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            color: var(--dark);
+        }
+
+        .status-pill {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .in-studio {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .on-shoot {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .repair {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        /* Cashbook Styling */
+        .cash-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .cash-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cash-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .cash-date {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+
+        .cash-amt {
+            font-weight: bold;
+        }
+
+        .amt-plus {
+            color: var(--success);
+        }
+
+        .amt-minus {
+            color: var(--danger);
+        }
+
+        .report-box {
+            background: #fff;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .report-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            padding: 5px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        /* Loading Spinner Styling */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader-text {
+            margin-top: 15px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Custom Notification Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            width: 85%;
+            max-width: 350px;
+            padding: 25px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .shoot-card {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            border-left: 5px solid var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--dark);
+            text-align: left;
+        }
+
+        /* --- NEW CSS FOR TRACKING FEATURE --- */
+        .tracking-container {
+            max-width: 400px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .timeline {
+            position: relative;
+            margin-top: 30px;
+            text-align: left;
+            padding-left: 30px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: #eee;
+        }
+        .step {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        .step::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 2px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #eee;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #eee;
+        }
+        .step.completed::before {
+            background: var(--success);
+            box-shadow: 0 0 0 2px var(--success);
+        }
+        .step.active::before {
+            background: var(--primary);
+            box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.3);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(78, 84, 200, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(78, 84, 200, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(78, 84, 200, 0); }
+        }
+        .step h4 { margin: 0; font-size: 15px; color: #333; }
+        .step p { margin: 3px 0 0 0; font-size: 12px; color: #777; }
+        /* --- NEW CSS FOR TRACKING FEATURE END --- */
+    </style>
+</head>
+
+<body>
+
+    <div id="customerTrackingView" style="display: none; background: #f4f7f6; min-height: 100vh; padding: 20px;">
+        <div class="tracking-container">
+            <h2>📸 AV Studio</h2>
+            <p style="color: #666; font-size: 14px;">హలో <b id="trackCustName"></b>, మీ ఆర్డర్ వర్క్ స్టేటస్ కింద చూడండి:</p>
+            
+            <div class="timeline" id="trackingTimeline">
+                </div>
+            
+            <div style="margin-top: 30px; padding: 15px; background: #eef2ff; border-radius: 10px;">
+                <p style="margin: 0; font-size: 13px; font-weight: bold; color: var(--primary);">బ్యాలెన్స్: ₹<span id="trackBal"></span></p>
+            </div>
+        </div>
+    </div>
+    <div id="loader" class="loader-overlay">
+        <div class="spinner"></div>
+        <div class="loader-text">డేటా లోడ్ అవుతోంది...</div>
+    </div>
+
+    <header>
+        <h1>📸 AV Studio Manager</h1>
+        <div class="dark-toggle" onclick="toggleDarkMode()">🌓</div>
+    </header>
+
+    <div class="container">
+        <div id="home" class="section active-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>మొత్తం ఆర్డర్స్</h3>
+                    <div class="value" id="totalOrders">0</div>
+                </div>
+                <div class="stat-card" style="border-left-color: var(--danger);">
+                    <h3>రావాల్సిన బ్యాలెన్స్</h3>
+                    <div class="value" id="totalBalance" style="color: var(--danger);">₹ 0</div>
+                </div>
+            </div>
+            <input type="text" id="searchInput" class="search-box" placeholder="🔍 కస్టమర్ పేరుతో వెతకండి..."
+                onkeyup="filterOrders()">
+            <h3 style="font-size: 16px; margin-bottom: 10px;">ఇటీవలి ఆర్డర్లు</h3>
+            <div id="orderList">డేటా లోడ్ అవుతోంది...</div>
+        </div>
+
+        <div id="add-order" class="section">
+            <div class="input-group">
+                <h3 id="formTitle" style="margin-top: 0;">New Registration</h3>
+                <input type="hidden" id="editOrderId">
+
+                <label>Order Date</label><input type="date" id="orderDate">
+                <label>Customer Name</label><input type="text" id="custName" placeholder="కస్టమర్ పేరు">
+                <label>Mobile Number</label><input type="tel" id="custPhone" placeholder="98765 XXXXX">
+                <label>Event Location</label><input type="text" id="eventLoc" placeholder="ఫంక్షన్ ఎక్కడ?">
+
+                <label>Current Work Status</label>
+                <select id="workStatus">
+                    <option value="1">📸 Shooting Done</option>
+                    <option value="2">✂️ Editing in Progress</option>
+                    <option value="3">🎨 Color Grading & Album</option>
+                    <option value="4">✅ Ready to Deliver</option>
+                </select>
+                <label>Event Type</label>
+                <select id="eventType">
+                    <option>Temple</option>
+                    <option>Birthday</option>
+                    <option>Rice Ceremony</option>
+                    <option>Engagement</option>
+                    <option>Wedding</option>
+                    <option>Maternity</option>
+                    <option>Outdoor Shoot</option>
+                    <option>Corporate Event</option>
+                </select>
+
+                <label>Required Services</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" class="deliverable" value="photos"> photos</label>
+                    <label><input type="checkbox" class="deliverable" value="video"> video</label>
+                    <label><input type="checkbox" class="deliverable" value="photos With Album"> photos With
+                        Album</label>
+                    <label><input type="checkbox" class="deliverable" value="Cinematic video"> Cinematic video</label>
+                    <label><input type="checkbox" class="deliverable" value="Cinematic photos"> Cinematic Photos
+                    </label>
+                    <label><input type="checkbox" class="deliverable" value="Live with Video"> Live with Video </label>
+                    <label><input type="checkbox" class="deliverable" value="Drone"> Drone</label>
+                    <label><input type="checkbox" class="deliverable" value="Live"> Live Streaming</label>
+                </div>
+
+                <label>Total Package Cost (₹)</label><input type="number" id="totalPrice" placeholder="0.00">
+                <label>Advance Paid (₹)</label><input type="number" id="advancePaid" placeholder="0.00">
+                <label>Drive/Photos Link</label><input type="url" id="driveLink"
+                    placeholder="https://drive.google.com/...">
+
+                <button class="btn-main" id="saveBtn" onclick="saveOrder()">Save Order Details</button>
+            </div>
+        </div>
+
+        <div id="calendar-section" class="section">
+            <div class="input-group">
+                <h3>📅 Events Calendar</h3>
+                <div id="calendar"></div>
+            </div>
+        </div>
+
+        <div id="tools" class="section">
+            <button class="btn-main" style="background: #27ae60; margin-bottom: 20px;" onclick="exportToExcel()">📊
+                Download Excel Report</button>
+
+            <div class="sticky-toggles">
+                <button class="toggle-btn btn-staff" onclick="toggleForm('staffForm')">👤 Add Staff Pay</button>
+                <button class="toggle-btn btn-kit" onclick="toggleForm('kitForm')">📸 Update Kit Rent</button>
+            </div>
+
+            <div id="kitForm" class="collapsible-form"
+                style="display: block; border: 2px solid var(--secondary); background: #f8f9fe; padding: 25px; box-shadow: 0 8px 20px rgba(143, 148, 251, 0.2);">
+                <h3 style="color: var(--primary); font-size: 18px; margin-top: 0; text-align: center;">📸 కిట్
+                    మేనేజ్‌మెంట్</h3>
+
+                <label style="color: var(--primary);">ఏ కిట్ ఇస్తున్నారు?</label>
+                <select id="kitItemSelect" style="border-color: var(--secondary); border-width: 2px;">
+                    <option value="R6 Mark II">Sony R6 Mark II</option>
+                    <option value="NX200">Sony NX200</option>
+                    <option value="Drone">Drone</option>
+                    <option value="Live Kit">Live Kit</option>
+                </select>
+
+                <label style="color: var(--primary);">ఎవరికి ఇచ్చారు?</label>
+                <input type="text" id="rentTo" placeholder="వ్యక్తి లేదా స్టూడియో పేరు..."
+                    style="border-color: var(--secondary); border-width: 2px;">
+
+                <label style="color: var(--primary);">రెంట్ అమౌంట్ (₹)</label>
+                <input type="number" id="rentAmount" placeholder="ఉదాహరణకు: 1500"
+                    style="border-color: var(--secondary); border-width: 2px;">
+
+                <label style="color: var(--primary);">ప్రస్తుత స్టేటస్</label>
+                <select id="itemStatus" style="border-color: var(--secondary); border-width: 2px;">
+                    <option value="in-studio">✅ స్టూడియోలో ఉంది (In-Studio)</option>
+                    <option value="on-shoot">🎥 రెంట్‌కి వెళ్ళింది (On-Shoot)</option>
+                    <option value="repair">🛠️ రిపేర్‌లో ఉంది (Repair)</option>
+                </select>
+
+                <button class="btn-main"
+                    style="background: linear-gradient(45deg, var(--primary), var(--secondary)); font-size: 18px; margin-top: 10px;"
+                    onclick="saveEquip()">అప్‌డేట్ చేయండి</button>
+            </div>
+
+            <div id="staffForm" class="collapsible-form">
+                <h3>Add Staff Payment</h3>
+                <input type="text" id="staffName" placeholder="Staff Name">
+
+                <label>Select Program (Event)</label>
+                <select id="staffEventLink">
+                    <option value="General">General/Other</option>
+                </select>
+
+                <label>Payment Date</label>
+                <input type="date" id="staffDate">
+
+                <input type="number" id="staffSalary" placeholder="Amount (₹)">
+                <button class="btn-main" style="background:var(--success)" onclick="saveStaff()">Save Staff Pay</button>
+            </div>
+
+            <div class="input-group" style="margin-top: 20px;">
+                <h3 style="margin-top: 0;">My Kit Tracking 📸</h3>
+                <div id="equipList"></div>
+            </div>
+
+            <div class="input-group">
+                <h3 style="margin-top: 0;">Staff Payment History 👷‍♂️</h3>
+                <div id="staffList"></div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+
+    <div id="history-section" class="section">
+        <div class="input-group">
+            <h3>కస్టమర్ హిస్టరీ 👤</h3>
+            <input type="text" id="historySearch" class="search-box" placeholder="కస్టమర్ పేరు టైప్ చేయండి..."
+                onkeyup="showCustomerHistory()">
+            <div id="historyDisplay">పేరు సెర్చ్ చేసి హిస్టరీ చూడండి.</div>
+        </div>
+    </div>
+
+    <div id="accounts" class="section">
+        <div class="input-group"
+            style="background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; text-align: center;">
+            <p style="margin:0; font-size: 12px; opacity: 0.9;">ప్రస్తుత నికర లాభం (Net Balance)</p>
+            <h1 id="netProfit" style="margin: 5px 0;">₹ 0</h1>
+        </div>
+
+        <div class="report-box">
+            <div class="report-header">
+                <h3 style="margin:0; font-size: 16px;">📊 మంత్లీ రిపోర్ట్</h3>
+                <input type="month" id="reportMonth" style="width: auto; margin:0; padding: 5px;"
+                    onchange="generateMonthlyReport()">
+            </div>
+            <div id="reportDisplay">
+                <p style="font-size:12px; color:#999; text-align:center;">నెలని ఎంచుకుని రిపోర్ట్ చూడండి.</p>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card" style="border-left-color: var(--success);">
+                <h3>మొత్తం ఆదాయం</h3>
+                <div class="value" id="totalRevenue" style="color: var(--success);">₹ 0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--danger);">
+                <h3>మొత్తం ఖర్చులు</h3>
+                <div class="value" id="totalExpensesDisplay" style="color: var(--danger);">₹ 0</div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <h3>కొత్త ఖర్చుని జోడించు</h3>
+            <input type="text" id="expDesc" placeholder="Description">
+            <input type="number" id="expAmount" placeholder="Amount">
+            <button class="btn-main" style="background: var(--danger);" onclick="saveExpense()">Add Expense</button>
+        </div>
+
+        <h3 style="font-size: 16px; margin-bottom: 10px;">Transaction History (Cashbook)</h3>
+        <div id="cashbookList">లోడ్ అవుతోంది...</div>
+    </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="showSection('home', this)">🏠<br>Home</button>
+        <button class="nav-item" onclick="showSection('add-order', this)">➕<br>Add</button>
+        <button class="nav-item" onclick="showSection('calendar-section', this)">📅<br>Calendar</button>
+        <button class="nav-item" onclick="showSection('tools', this)">🛠️<br>Tools</button>
+        <button class="nav-item" onclick="showSection('history-section', this)">👤<br>History</button>
+        <button class="nav-item" onclick="showSection('accounts', this)">📊<br>Accounts</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYZ_pBYd9qm7ZLkQRyDkvl6XA5l85Uteg",
+            authDomain: "av-studio-3ec22.firebaseapp.com",
+            projectId: "av-studio-3ec22",
+            storageBucket: "av-studio-3ec22.firebasestorage.app",
+            messagingSenderId: "716218180457",
+            appId: "1:716218180457:web:c5df05857eb848011693f8",
+            measurementId: "G-BSBJ19Y83E"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let allOrders = {}, allStaff = {}, allExpenses = {}, allEquip = {}, allKitTransactions = {}, calendar;
+
+        /* --- NEW JS FOR TRACKING VIEW START --- */
+        const urlParams = new URLSearchParams(window.location.search);
+        const trackId = urlParams.get('track');
+
+        function initTrackingView() {
+            if (trackId) {
+                // Hide normal app layout
+                const header = document.querySelector('header'); if(header) header.style.display = 'none';
+                const container = document.querySelector('.container'); if(container) container.style.display = 'none';
+                const bottomNav = document.querySelector('.bottom-nav'); if(bottomNav) bottomNav.style.display = 'none';
+                
+                // Show tracking UI
+                document.getElementById('customerTrackingView').style.display = 'block';
+                
+                // Fetch Tracking Data
+                database.ref('studio_orders/' + trackId).once('value').then(snap => {
+                    hideLoader();
+                    const o = snap.val();
+                    if(o) {
+                        document.getElementById('trackCustName').innerText = o.name;
+                        document.getElementById('trackBal').innerText = o.balance.toLocaleString();
+                        
+                        const statusNum = parseInt(o.workStatus || 1);
+                        const steps = [
+                            { id: 1, title: "📸 Shooting Done", desc: "ఫుటేజ్ స్టూడియోకి చేరుకుంది" },
+                            { id: 2, title: "✂️ Editing in Progress", desc: "వీడియో/ఫోటోస్ ఎడిటింగ్ జరుగుతోంది" },
+                            { id: 3, title: "🎨 Color Grading & Album", desc: "కలర్ కరెక్షన్ మరియు ఆల్బమ్ డిజైన్" },
+                            { id: 4, title: "✅ Ready to Deliver", desc: "మీ ఔట్‌పుట్ సిద్ధంగా ఉంది!" }
+                        ];
+                        
+                        let timelineHTML = "";
+                        steps.forEach(s => {
+                            let statusClass = "";
+                            if(s.id < statusNum) statusClass = "completed";
+                            if(s.id === statusNum) statusClass = "active";
+                            timelineHTML += `<div class="step ${statusClass}"><h4>${s.title}</h4><p>${s.desc}</p></div>`;
+                        });
+                        document.getElementById('trackingTimeline').innerHTML = timelineHTML;
+                    } else {
+                        document.getElementById('customerTrackingView').innerHTML = "<h3 style='text-align:center; margin-top:50px;'>ఆర్డర్ కనుగొనబడలేదు! 😕</h3>";
+                    }
+                });
+            }
+        }
+        
+        function sendTrackingWA(name, phone, id) {
+            const trackingLink = window.location.origin + window.location.pathname + "?track=" + id;
+            const msg = `హలో ${name},\n\nAV Studio నుండి మీ ఫోటో/వీడియో వర్క్ ఏ దశలో ఉందో ఈ కింది లింక్ ద్వారా ఎప్పటికప్పుడు తెలుసుకోండి:\n\n📍 ${trackingLink}\n\nThank you!`;
+            window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(msg)}`);
+        }
+        /* --- NEW JS FOR TRACKING VIEW END --- */
+
+        window.onload = function () {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('orderDate').value = today;
+            document.getElementById('reportMonth').value = today.slice(0, 7);
+            initCalendar();
+        };
+        window.onload = function () {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('orderDate').value = today;
+            document.getElementById('reportMonth').value = today.slice(0, 7);
+
+            // Staff payment date ki default ga today date set cheyadam
+            if (document.getElementById('staffDate')) {
+                document.getElementById('staffDate').value = today;
+            }
+
+            initCalendar();
+            initTrackingView(); // --- ADDED TRACKING INIT CALL ---
+        };
+
+        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+        function toggleForm(id) {
+            const f = document.getElementById(id);
+            const isV = f.style.display === 'block';
+            document.querySelectorAll('.collapsible-form').forEach(el => el.style.display = 'none');
+            f.style.display = isV ? 'none' : 'block';
+        }
+
+        // Loader Functionality
+        function hideLoader() { document.getElementById('loader').style.display = 'none'; }
+
+        function showSection(id, btn) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
+            document.getElementById(id).classList.add('active-section');
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            btn.classList.add('active');
+            if (id === 'calendar-section') setTimeout(() => calendar.render(), 200);
+            if (id === 'tools') updateStaffEventDropdown();
+            if (id === 'accounts') { renderCashbook(); generateMonthlyReport(); }
+
+            if (!window.initialCheckDone && Object.keys(allOrders).length > 0) {
+                checkNotifications();
+                window.initialCheckDone = true;
+            }
+        }
+
+        function updateStaffEventDropdown() {
+            const drop = document.getElementById('staffEventLink');
+            drop.innerHTML = '<option value="General">General/Other</option>';
+            for (let id in allOrders) {
+                let op = document.createElement('option');
+                op.value = allOrders[id].name;
+                op.text = `${allOrders[id].name} (${allOrders[id].date})`;
+                drop.appendChild(op);
+            }
+        }
+
+        function saveOrder() {
+            const editId = document.getElementById('editOrderId').value;
+            const id = editId || Date.now().toString();
+            let svs = [];
+            document.querySelectorAll('.deliverable:checked').forEach(c => svs.push(c.value));
+
+            const data = {
+                id, name: document.getElementById('custName').value,
+                phone: document.getElementById('custPhone').value,
+                location: document.getElementById('eventLoc').value || "",
+                type: document.getElementById('eventType').value,
+                date: document.getElementById('orderDate').value,
+                services: svs.join(', '),
+                drive: document.getElementById('driveLink').value || "",
+                total: Number(document.getElementById('totalPrice').value),
+                advance: Number(document.getElementById('advancePaid').value),
+                balance: Number(document.getElementById('totalPrice').value) - Number(document.getElementById('advancePaid').value)
+            };
+            
+            // --- ADDED WORK STATUS ---
+            data.workStatus = document.getElementById('workStatus') ? document.getElementById('workStatus').value : "1";
+
+            if (!data.name || !data.total || !data.phone) return alert("పేరు, ఫోన్ మరియు ధర ఖచ్చితంగా ఇవ్వాలి!");
+            if (data.phone.length < 10) return alert("సరైన 10 అంకెల ఫోన్ నంబర్ ఇవ్వండి!");
+
+            database.ref('studio_orders/' + id).set(data).then(() => { resetForm(); showSection('home', document.querySelector('.nav-item')); });
+        }
+
+        function resetForm() {
+            document.getElementById('editOrderId').value = "";
+            document.querySelectorAll('#add-order input[type="text"], #add-order input[type="number"], #add-order input[type="tel"], #add-order input[type="url"]').forEach(i => i.value = "");
+            document.querySelectorAll('.deliverable').forEach(c => c.checked = false);
+            document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('formTitle').innerText = "New Registration";
+            document.getElementById('saveBtn').innerText = "Save Order Details";
+            
+            // --- ADDED WORK STATUS RESET ---
+            if(document.getElementById('workStatus')) document.getElementById('workStatus').value = "1";
+        }
+
+        function getQRCodeDataUrl(url) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width; canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    resolve(canvas.toDataURL('image/png'));
+                };
+                img.onerror = () => reject(new Error("QR Code image load failed"));
+                img.src = url;
+            });
+        }
+
+        async function downloadPDF(id) {
+            const o = allOrders[id];
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const upiID = "9505858565-3@ybl";
+            const businessName = "AV STUDIO";
+            const cleanAmount = o.balance.toString().replace(/[^0-9.]/g, '');
+            const upiString = `upi://pay?pa=${upiID}&pn=${encodeURIComponent(businessName)}&am=${cleanAmount}&cu=INR`;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+            try {
+                const qrImageData = await getQRCodeDataUrl(qrUrl);
+                doc.setFillColor(41, 128, 185); doc.rect(0, 0, 210, 45, 'F');
+                doc.setTextColor(255, 255, 255); doc.setFontSize(26); doc.setFont("helvetica", "bold"); doc.text("AV STUDIO", 20, 25);
+                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text("Premium Photography & Videography Services", 20, 33);
+                doc.text("INVOICE NO:", 145, 20); doc.setFont("helvetica", "bold"); doc.text(`#INV-${id.toString().slice(-4)}`, 175, 20);
+                doc.setFont("helvetica", "normal"); doc.text("DATE:", 145, 27); doc.text(`${o.date}`, 175, 27);
+                doc.setTextColor(44, 62, 80); doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("BILL TO:", 20, 60);
+                doc.setFontSize(14); doc.text(`${o.name}`, 20, 70);
+                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text(`Phone: ${o.phone}`, 20, 77); doc.text(`Location: ${o.location || 'N/A'}`, 20, 84);
+                doc.setFillColor(245, 246, 250); doc.rect(20, 95, 170, 10, 'F'); doc.setFont("helvetica", "bold"); doc.text("Description", 25, 102); doc.text("Amount (INR)", 155, 102);
+                doc.setFont("helvetica", "normal"); doc.text(`${o.type} (${o.services || 'General'})`, 25, 115); doc.text(`Rs. ${o.total.toLocaleString()}`, 158, 115);
+                doc.line(20, 120, 190, 120);
+                let currentY = 135; doc.text("Total Amount:", 130, currentY); doc.text(`Rs. ${o.total.toLocaleString()}`, 165, currentY);
+                currentY += 8; doc.setTextColor(39, 174, 96); doc.text("Advance Paid:", 130, currentY); doc.text(`(-) Rs. ${o.advance.toLocaleString()}`, 158, currentY);
+                currentY += 10; doc.setFillColor(44, 62, 80); doc.rect(125, currentY, 65, 15, 'F'); doc.setTextColor(255, 255, 255); doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("TOTAL DUE:", 130, currentY + 10);
+                doc.setFontSize(14); doc.text(`${o.balance.toLocaleString()}`, 160, currentY + 10);
+                doc.setTextColor(44, 62, 80); doc.setFontSize(11); doc.text("Scan & Pay with UPI:", 20, 140); doc.addImage(qrImageData, 'PNG', 20, 145, 40, 40);
+                doc.setFontSize(8); doc.setTextColor(120, 120, 120); doc.text("GPay, PhonePe, Paytm accepted.", 20, 190);
+                doc.setFontSize(9); doc.setFont("helvetica", "italic"); doc.text("Thank you for choosing AV Studio!", 105, 280, { align: "center" });
+                doc.save(`Invoice_${o.name.replace(/\s+/g, '_')}.pdf`);
+            } catch (error) { console.error(error); alert("Error generating QR."); }
+        }
+        function sendWA(n, p, b) { window.open(`https://wa.me/91${p}?text=Hi ${n}, AV Studio Balance: ₹${b}`); }
+
+        // --- LISTENERS ---
+        database.ref('studio_orders').on('value', snap => {
+            allOrders = snap.val() || {};
+            const list = document.getElementById('orderList'); list.innerHTML = "";
+            let pending = 0; let count = 0;
+            Object.keys(allOrders).reverse().forEach(id => {
+                let o = allOrders[id]; count++; pending += o.balance;
+                list.innerHTML += `<div class="order-item">
+            <div class="order-header"><b>${o.name}</b> <span class="status-pill ${o.balance == 0 ? 'in-studio' : 'repair'}">${o.balance == 0 ? 'Paid' : 'Pending'}</span></div>
+            <div style="font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 2px;">${o.type}</div>
+            <div style="font-size: 12px; color: #555;">
+                📅 ${o.date} <br>
+                📍 ${o.location || 'No Location'} <br>
+                💰 Bal: <b>₹${o.balance.toLocaleString()}</b>
+            </div>
+            <div class="order-actions">
+                <button class="action-btn wa-btn" onclick="sendWA('${o.name}','${o.phone}',${o.balance})">WA</button>
+                <button class="action-btn pdf-btn" onclick="downloadPDF('${id}')">Bill</button>
+                <button class="action-btn edit-btn" onclick="editOrder('${id}')">Edit</button>
+                <button class="action-btn" style="background: #9b59b6; color: white;" onclick="sendTrackingWA('${o.name}','${o.phone}','${id}')">Track</button>
+                <button class="action-btn del-btn" onclick="deleteOrder('${id}')">Del</button>
+            </div></div>`;
+            });
+            document.getElementById('totalOrders').innerText = count;
+            document.getElementById('totalBalance').innerText = "₹ " + pending.toLocaleString();
+            renderCashbook(); updateCalendar(); generateMonthlyReport();
+
+            if (!window.initialCheckDone && count > 0) {
+                setTimeout(checkNotifications, 2000);
+                window.initialCheckDone = true;
+            }
+            hideLoader(); // డేటా రాగానే లోడర్ మాయమవుతుంది
+        });
+
+        database.ref('studio_staff').on('value', snap => {
+            allStaff = snap.val() || {};
+            const list = document.getElementById('staffList'); list.innerHTML = "";
+            for (let id in allStaff) list.innerHTML += `<div class="list-item"><span><b>${allStaff[id].name}</b> (₹${allStaff[id].sal})</span><span onclick="if(confirm('ఈ పేమెంట్ వివరాలను డిలీట్ చేయాలా?')) database.ref('studio_staff/${id}').remove()" style="color:red; cursor:pointer; padding:5px;">✖</span></div>`;
+            renderCashbook();
+        });
+
+        database.ref('studio_equip').on('value', snap => {
+            allEquip = snap.val() || {};
+            const list = document.getElementById('equipList'); list.innerHTML = "";
+            ["R6 Mark II", "NX200", "Drone", "Live Kit"].forEach(name => {
+                const kit = allEquip[name] || { item: name, status: 'in-studio', rentTo: '-' };
+                list.innerHTML += `<div class="list-item"><span><b>${kit.item}</b></span><span>${kit.status} (${kit.rentTo})</span></div>`;
+            });
+        });
+
+        database.ref('kit_transactions').on('value', snap => {
+            allKitTransactions = snap.val() || {};
+            renderCashbook(); generateMonthlyReport();
+        });
+
+        database.ref('studio_expenses').on('value', snap => {
+            allExpenses = snap.val() || {};
+            renderCashbook(); generateMonthlyReport();
+        });
+
+        function saveStaff() {
+            const name = document.getElementById('staffName').value;
+            const prog = document.getElementById('staffEventLink').value;
+            const sal = Number(document.getElementById('staffSalary').value);
+            // Input field nundi date teesukovadam
+            const selectedDate = document.getElementById('staffDate').value;
+
+            if (name && sal && selectedDate) {
+                database.ref('studio_staff/' + Date.now()).set({
+                    name,
+                    prog,
+                    sal,
+                    date: selectedDate // Ikkada kotha date save avthundi
+                }).then(() => {
+                    toggleForm('staffForm');
+                    document.getElementById('staffName').value = "";
+                    document.getElementById('staffSalary').value = "";
+                    // Optionally reset date to today
+                    document.getElementById('staffDate').value = new Date().toISOString().split('T')[0];
+                });
+            } else {
+                alert("Peru, Dabbu mariyu Date... anni tappakunda ivvandi!");
+            }
+        }
+        // 1. సేవ్ చేసే ఫంక్షన్ (ఇది ఫారమ్ నింపినప్పుడు డేటాను సేవ్ చేస్తుంది)
+        function saveEquip() {
+            const item = document.getElementById('kitItemSelect').value;
+            const rentTo = document.getElementById('rentTo').value || "None";
+            const amt = Number(document.getElementById('rentAmount').value) || 0;
+            const status = document.getElementById('itemStatus').value;
+            const today = new Date().toISOString().split('T')[0];
+
+            database.ref('studio_equip/' + item).set({ item, rentTo, status, date: today });
+
+            if (status === 'on-shoot' && amt > 0) {
+                database.ref('kit_transactions').push({ item, rentTo, amt, date: today });
+            }
+
+            toggleForm('kitForm');
+            document.getElementById('rentTo').value = ""; document.getElementById('rentAmount').value = "";
+        }
+
+        // 2. లిజనర్ (డేటాబేస్ నుండి లైవ్ గా డేటా తీసుకొచ్చి లిస్ట్ చూపిస్తుంది)
+        database.ref('studio_equip').on('value', snap => {
+            allEquip = snap.val() || {};
+            const list = document.getElementById('equipList'); list.innerHTML = "";
+
+            ["R6 Mark II", "NX200", "Drone", "Live Kit"].forEach(name => {
+                const kit = allEquip[name] || { item: name, status: 'in-studio', rentTo: '-' };
+
+                let statusText = "స్టూడియోలో ఉంది";
+                let statusColor = "var(--success)"; // ఆకుపచ్చ రంగు
+                let returnBtnHTML = "";
+
+                // రెంట్‌కి వెళ్ళినప్పుడు మాత్రమే బటన్ కనిపిస్తుంది
+                if (kit.status === "on-shoot") {
+                    statusText = `రెంట్: ${kit.rentTo}`;
+                    statusColor = "#f39c12"; // ఆరెంజ్ రంగు
+                    returnBtnHTML = `<button onclick="returnKit('${kit.item}')" style="background: #e8f5e9; color: #27ae60; border: 1px solid #27ae60; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">✅ రిటర్న్</button>`;
+                } else if (kit.status === "repair") {
+                    statusText = "రిపేర్ లో ఉంది 🛠️";
+                    statusColor = "var(--danger)"; // ఎరుపు రంగు
+                }
+
+                // కిట్ కార్డు డిజైన్
+                list.innerHTML += `
+            <div class="list-item" style="background: white; border-left: 5px solid ${statusColor}; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-weight: 600; font-size: 15px; color: var(--dark);">${kit.item}</span>
+                    <span style="font-size: 12px; color: #666;">${statusText}</span>
+                </div>
+                <div>${returnBtnHTML}</div>
+            </div>`;
+            });
+        });
+
+        // 3. రిటర్న్ కిట్ ఫంక్షన్ (బటన్ నొక్కినప్పుడు పనిచేస్తుంది)
+        function returnKit(item) {
+            if (confirm(`${item} తిరిగి స్టూడియోకి వచ్చిందా? స్టేటస్ అప్‌డేట్ చేయాలా?`)) {
+                const today = new Date().toISOString().split('T')[0];
+                // డేటాబేస్ లో నేరుగా 'in-studio' అని మార్చేస్తుంది
+                database.ref('studio_equip/' + item).update({
+                    status: 'in-studio',
+                    rentTo: '-',
+                    date: today
+                });
+            }
+        }
+
+        function saveEquip() {
+            const item = document.getElementById('kitItemSelect').value;
+            const rentTo = document.getElementById('rentTo').value || "None";
+            const amt = Number(document.getElementById('rentAmount').value) || 0;
+            const status = document.getElementById('itemStatus').value;
+            const today = new Date().toISOString().split('T')[0];
+
+            database.ref('studio_equip/' + item).set({ item, rentTo, status, date: today });
+
+            if (status === 'on-shoot' && amt > 0) {
+                database.ref('kit_transactions').push({ item, rentTo, amt, date: today });
+            }
+
+            toggleForm('kitForm');
+            document.getElementById('rentTo').value = ""; document.getElementById('rentAmount').value = "";
+        }
+
+        function saveExpense() {
+            const desc = document.getElementById('expDesc').value;
+            const amt = Number(document.getElementById('expAmount').value);
+            if (desc && amt) {
+                database.ref('studio_expenses/' + Date.now()).set({ desc, amt, date: new Date().toISOString().split('T')[0] }).then(() => {
+                    document.getElementById('expDesc').value = ""; document.getElementById('expAmount').value = "";
+                });
+            }
+        }
+
+        function generateMonthlyReport() {
+            const month = document.getElementById('reportMonth').value;
+            const display = document.getElementById('reportDisplay');
+            if (!month || !display) return;
+
+            let mIncome = 0, mExpense = 0, mStaffPay = 0;
+            let eventStats = {};
+
+            Object.values(allOrders).forEach(o => {
+                if (o.date && o.date.startsWith(month)) {
+                    mIncome += Number(o.advance);
+                    eventStats[o.type] = (eventStats[o.type] || 0) + Number(o.advance);
+                }
+            });
+
+            Object.values(allKitTransactions).forEach(k => {
+                if (k.date && k.date.startsWith(month)) {
+                    mIncome += Number(k.amt);
+                    eventStats['Kit Rental'] = (eventStats['Kit Rental'] || 0) + Number(k.amt);
+                }
+            });
+
+            Object.values(allStaff).forEach(s => { if (s.date && s.date.startsWith(month)) mStaffPay += Number(s.sal); });
+            Object.values(allExpenses).forEach(e => { if (e.date && e.date.startsWith(month)) mExpense += Number(e.amt); });
+
+            let totalOut = mExpense + mStaffPay;
+            let net = mIncome - totalOut;
+
+            display.innerHTML = `
+            <div style="display:flex; justify-content: space-around; margin-bottom: 15px; background:#f9f9f9; padding:10px; border-radius:10px;">
+                <div style="text-align:center;"><small>ఆదాయం</small><br><b style="color:var(--success)">₹${mIncome.toLocaleString()}</b></div>
+                <div style="text-align:center;"><small>ఖర్చులు</small><br><b style="color:var(--danger)">₹${totalOut.toLocaleString()}</b></div>
+                <div style="text-align:center;"><small>లాభం</small><br><b style="color:${net >= 0 ? 'var(--success)' : 'var(--danger)'}">₹${net.toLocaleString()}</b></div>
+            </div>
+            <div style="border-top: 1px solid #eee; padding-top: 5px;">
+                <p style="font-size:11px; font-weight:bold;">వివరాలు:</p>
+                ${Object.keys(eventStats).map(type => `<div class="report-row"><span>${type}</span><span>₹${eventStats[type].toLocaleString()}</span></div>`).join('') || 'డేటా లేదు'}
+            </div>`;
+        }
+
+        function renderCashbook() {
+            const list = document.getElementById('cashbookList'); if (!list) return;
+            list.innerHTML = ""; let logs = []; let totalIncome = 0, totalExp = 0;
+
+            for (let id in allOrders) {
+                let val = Number(allOrders[id].advance) || 0;
+                logs.push({ title: "Adv: " + allOrders[id].name, amt: val, type: "IN", date: allOrders[id].date });
+                totalIncome += val;
+            }
+            for (let id in allKitTransactions) {
+                let val = Number(allKitTransactions[id].amt) || 0;
+                logs.push({ title: "Kit: " + allKitTransactions[id].item, amt: val, type: "IN", date: allKitTransactions[id].date });
+                totalIncome += val;
+            }
+            for (let id in allStaff) {
+                let val = Number(allStaff[id].sal) || 0;
+                logs.push({ title: "Staff: " + allStaff[id].name, amt: val, type: "OUT", date: allStaff[id].date });
+                totalExp += val;
+            }
+            for (let id in allExpenses) {
+                let val = Number(allExpenses[id].amt) || 0;
+                logs.push({ title: allExpenses[id].desc, amt: val, type: "OUT", date: allExpenses[id].date });
+                totalExp += val;
+            }
+
+            logs.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)).forEach(log => {
+                list.innerHTML += `<div class="cash-item">
+                <div class="cash-info"><span class="cash-title">${log.title}</span><span class="cash-date">${log.date}</span></div>
+                <div class="cash-amt ${log.type === 'IN' ? 'amt-plus' : 'amt-minus'}">${log.type === 'IN' ? '+' : '-'} ₹${log.amt.toLocaleString()}</div>
+            </div>`;
+            });
+
+            document.getElementById('totalRevenue').innerText = "₹ " + totalIncome.toLocaleString();
+            document.getElementById('totalExpensesDisplay').innerText = "₹ " + totalExp.toLocaleString();
+            document.getElementById('netProfit').innerText = "₹ " + (totalIncome - totalExp).toLocaleString();
+        }
+
+        function showCustomerHistory() {
+            const s = document.getElementById('historySearch').value.toLowerCase();
+            const d = document.getElementById('historyDisplay');
+            if (s.length < 2) return;
+            let html = "", paid = 0, bal = 0, found = false;
+            for (let id in allOrders) {
+                if (allOrders[id].name && allOrders[id].name.toLowerCase().includes(s)) {
+                    found = true; paid += Number(allOrders[id].advance); bal += Number(allOrders[id].balance);
+                    html += `<div class="history-card">📅 ${allOrders[id].date} - ${allOrders[id].type}<br>Paid: ₹${allOrders[id].advance} | Bal: ₹${allOrders[id].balance}</div>`;
+                }
+            }
+            d.innerHTML = found ? `<div style="padding:10px; border-bottom:1px solid #ddd;"><p>Paid: ₹${paid}</p><p>Bal: ₹${bal}</p></div>${html}` : "No data.";
+        }
+
+        function initCalendar() { calendar = new FullCalendar.Calendar(document.getElementById('calendar'), { initialView: 'dayGridMonth' }); calendar.render(); }
+        function updateCalendar() { if (!calendar) return; let ev = []; for (let id in allOrders) ev.push({ title: allOrders[id].name, start: allOrders[id].date }); calendar.removeAllEvents(); calendar.addEventSource(ev); }
+
+        function checkNotifications() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const today = `${year}-${month}-${day}`;
+
+            const todayShoots = [];
+            if (!allOrders || Object.keys(allOrders).length === 0) return;
+
+            for (let id in allOrders) {
+                if (allOrders[id].date === today) {
+                    todayShoots.push(allOrders[id].name);
+                }
+            }
+
+            if (todayShoots.length > 0) {
+                const modal = document.getElementById('notifModal');
+                const body = document.getElementById('notifBody');
+                body.innerHTML = todayShoots.map(name => `
+            <div class="shoot-card">
+                <span>📸</span>
+                <span>${name}</span>
+            </div>
+        `).join('');
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeNotif() {
+            document.getElementById('notifModal').style.display = 'none';
+        }
+
+        function filterOrders() {
+            let v = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.order-item').forEach(i => {
+                const custName = i.querySelector('b').innerText.toLowerCase();
+                i.style.display = custName.includes(v) ? "block" : "none";
+            });
+        }
+        function exportToExcel() {
+            if (Object.keys(allOrders).length === 0) {
+                alert("ఎగుమతి చేయడానికి ఎటువంటి డేటా లేదు!");
+                return;
+            }
+            const dataForExcel = Object.values(allOrders).map(o => ({
+                "Date": o.date,
+                "Customer Name": o.name,
+                "Phone": o.phone,
+                "Event Type": o.type,
+                "Location": o.location || "N/A",
+                "Services": o.services,
+                "Total Cost": o.total,
+                "Advance": o.advance,
+                "Balance": o.balance
+            }));
+            const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
+            const fileName = `AV_Studio_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(workbook, fileName);
+        }
+        function editOrder(id) {
+            const o = allOrders[id]; document.getElementById('editOrderId').value = id;
+            document.getElementById('custName').value = o.name; document.getElementById('custPhone').value = o.phone;
+            document.getElementById('orderDate').value = o.date; document.getElementById('totalPrice').value = o.total;
+            document.getElementById('advancePaid').value = o.advance;
+            document.getElementById('eventLoc').value = o.location || "";
+            document.querySelectorAll('.deliverable').forEach(c => c.checked = false);
+            if (o.services) {
+                const selectedServices = o.services.split(', ');
+                document.querySelectorAll('.deliverable').forEach(c => {
+                    if (selectedServices.includes(c.value)) c.checked = true;
+                });
+            }
+            
+            // --- ADDED WORK STATUS EDIT ---
+            if(document.getElementById('workStatus')) document.getElementById('workStatus').value = o.workStatus || "1";
+
+            showSection('add-order', document.querySelectorAll('.nav-item')[1]);
+            document.getElementById('formTitle').innerText = "Edit Order Details";
+            document.getElementById('saveBtn').innerText = "Update Order Details";
+        }
+        function deleteOrder(id) { if (confirm("ఈ ఆర్డర్ ను పూర్తిగా డిలీట్ చేయాలా?")) database.ref('studio_orders/' + id).remove(); }
+    </script>
+    <div id="notifModal" class="modal-overlay" onclick="closeNotif()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>📅 నేటి షూటింగ్స్</h3>
+                <span class="close-btn" onclick="closeNotif()">&times;</span>
+            </div>
+            <div id="notifBody" class="modal-body">
+            </div>
+            <button class="btn-main" onclick="closeNotif()">సరే</button>
+        </div>
+    </div>
+</body>
+
+</html>
