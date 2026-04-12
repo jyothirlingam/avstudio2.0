@@ -1100,7 +1100,6 @@
                 💰 Bal: <b>₹${o.balance.toLocaleString()}</b>
             </div>
             <div class="order-actions">
-                <button class="action-btn wa-btn" onclick="sendWA('${o.name}','${o.phone}',${o.balance})">WA</button>
                 <button class="action-btn pdf-btn" onclick="downloadPDF('${id}')">Bill</button>
                 <button class="action-btn edit-btn" onclick="editOrder('${id}')">Edit</button>
                 <button class="action-btn" style="background: #9b59b6; color: white;" onclick="sendTrackingWA('${o.name}','${o.phone}','${id}')">Track</button>
