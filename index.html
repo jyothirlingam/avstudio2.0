@@ -577,15 +577,17 @@
             background: white;
             padding: 30px 20px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
+
         .timeline {
             position: relative;
             margin-top: 30px;
             text-align: left;
             padding-left: 30px;
         }
+
         .timeline::before {
             content: '';
             position: absolute;
@@ -595,10 +597,12 @@
             width: 3px;
             background: #eee;
         }
+
         .step {
             position: relative;
             margin-bottom: 25px;
         }
+
         .step::before {
             content: '';
             position: absolute;
@@ -611,22 +615,44 @@
             border: 3px solid white;
             box-shadow: 0 0 0 2px #eee;
         }
+
         .step.completed::before {
             background: var(--success);
             box-shadow: 0 0 0 2px var(--success);
         }
+
         .step.active::before {
             background: var(--primary);
             box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.3);
             animation: pulse 1.5s infinite;
         }
+
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(78, 84, 200, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(78, 84, 200, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(78, 84, 200, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(78, 84, 200, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(78, 84, 200, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(78, 84, 200, 0);
+            }
         }
-        .step h4 { margin: 0; font-size: 15px; color: #333; }
-        .step p { margin: 3px 0 0 0; font-size: 12px; color: #777; }
+
+        .step h4 {
+            margin: 0;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .step p {
+            margin: 3px 0 0 0;
+            font-size: 12px;
+            color: #777;
+        }
+
         /* --- NEW CSS FOR TRACKING FEATURE END --- */
     </style>
 </head>
@@ -636,13 +662,15 @@
     <div id="customerTrackingView" style="display: none; background: #f4f7f6; min-height: 100vh; padding: 20px;">
         <div class="tracking-container">
             <h2>📸 AV Studio</h2>
-            <p style="color: #666; font-size: 14px;">హలో <b id="trackCustName"></b>, మీ ఆర్డర్ వర్క్ స్టేటస్ కింద చూడండి:</p>
-            
+            <p style="color: #666; font-size: 14px;">హలో <b id="trackCustName"></b>, మీ ఆర్డర్ వర్క్ స్టేటస్ కింద
+                చూడండి:</p>
+
             <div class="timeline" id="trackingTimeline">
-                </div>
-            
+            </div>
+
             <div style="margin-top: 30px; padding: 15px; background: #eef2ff; border-radius: 10px;">
-                <p style="margin: 0; font-size: 13px; font-weight: bold; color: var(--primary);">బ్యాలెన్స్: ₹<span id="trackBal"></span></p>
+                <p style="margin: 0; font-size: 13px; font-weight: bold; color: var(--primary);">బ్యాలెన్స్: ₹<span
+                        id="trackBal"></span></p>
             </div>
         </div>
     </div>
@@ -734,6 +762,7 @@
         </div>
 
         <div id="tools" class="section">
+
             <button class="btn-main" style="background: #27ae60; margin-bottom: 20px;" onclick="exportToExcel()">📊
                 Download Excel Report</button>
 
@@ -800,6 +829,24 @@
                 <h3 style="margin-top: 0;">Staff Payment History 👷‍♂️</h3>
                 <div id="staffList"></div>
             </div>
+            <div class="input-group" style="margin-top: 20px; background: #fffaf0; border: 1px solid #ffeaa7;">
+                <h3 style="margin-top: 0; color: #d35400;">📢 ప్రమోషనల్ బ్రాడ్‌కాస్ట్</h3>
+                <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 10px;">ఆఫర్స్ లేదా పండుగ శుభాకాంక్షలు
+                    పంపడానికి మెసేజ్ టైప్ చేయండి.</p>
+
+                <textarea id="promoMessage" rows="4"
+                    placeholder="ఉదా: నమస్కారం! శ్రావణ మాసం సందర్భంగా ఫోటోషూట్‌పై 20% డిస్కౌంట్..."
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-family: 'Inter', sans-serif; resize: vertical; margin-bottom: 15px; box-sizing: border-box;"></textarea>
+
+                <button class="btn-main" onclick="prepareBroadcast()"
+                    style="background: #e67e22; margin-bottom: 10px;">మెసేజ్ రెడీ చేయండి</button>
+
+                <div id="broadcastList"
+                    style="display: none; max-height: 300px; overflow-y: auto; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+                </div>
+            </div>
+
+
         </div>
 
 
@@ -892,21 +939,21 @@
         function initTrackingView() {
             if (trackId) {
                 // Hide normal app layout
-                const header = document.querySelector('header'); if(header) header.style.display = 'none';
-                const container = document.querySelector('.container'); if(container) container.style.display = 'none';
-                const bottomNav = document.querySelector('.bottom-nav'); if(bottomNav) bottomNav.style.display = 'none';
-                
+                const header = document.querySelector('header'); if (header) header.style.display = 'none';
+                const container = document.querySelector('.container'); if (container) container.style.display = 'none';
+                const bottomNav = document.querySelector('.bottom-nav'); if (bottomNav) bottomNav.style.display = 'none';
+
                 // Show tracking UI
                 document.getElementById('customerTrackingView').style.display = 'block';
-                
+
                 // Fetch Tracking Data
                 database.ref('studio_orders/' + trackId).once('value').then(snap => {
                     hideLoader();
                     const o = snap.val();
-                    if(o) {
+                    if (o) {
                         document.getElementById('trackCustName').innerText = o.name;
                         document.getElementById('trackBal').innerText = o.balance.toLocaleString();
-                        
+
                         const statusNum = parseInt(o.workStatus || 1);
                         const steps = [
                             { id: 1, title: "📸 Shooting Done", desc: "ఫుటేజ్ స్టూడియోకి చేరుకుంది" },
@@ -914,12 +961,12 @@
                             { id: 3, title: "🎨 Color Grading & Album", desc: "కలర్ కరెక్షన్ మరియు ఆల్బమ్ డిజైన్" },
                             { id: 4, title: "✅ Ready to Deliver", desc: "మీ ఔట్‌పుట్ సిద్ధంగా ఉంది!" }
                         ];
-                        
+
                         let timelineHTML = "";
                         steps.forEach(s => {
                             let statusClass = "";
-                            if(s.id < statusNum) statusClass = "completed";
-                            if(s.id === statusNum) statusClass = "active";
+                            if (s.id < statusNum) statusClass = "completed";
+                            if (s.id === statusNum) statusClass = "active";
                             timelineHTML += `<div class="step ${statusClass}"><h4>${s.title}</h4><p>${s.desc}</p></div>`;
                         });
                         document.getElementById('trackingTimeline').innerHTML = timelineHTML;
@@ -929,7 +976,7 @@
                 });
             }
         }
-        
+
         function sendTrackingWA(name, phone, id) {
             const trackingLink = window.location.origin + window.location.pathname + "?track=" + id;
             const msg = `హలో ${name},\n\nAV Studio నుండి మీ ఫోటో/వీడియో వర్క్ ఏ దశలో ఉందో ఈ కింది లింక్ ద్వారా ఎప్పటికప్పుడు తెలుసుకోండి:\n\n📍 ${trackingLink}\n\nThank you!`;
@@ -937,12 +984,7 @@
         }
         /* --- NEW JS FOR TRACKING VIEW END --- */
 
-        window.onload = function () {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('orderDate').value = today;
-            document.getElementById('reportMonth').value = today.slice(0, 7);
-            initCalendar();
-        };
+
         window.onload = function () {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('orderDate').value = today;
@@ -1012,7 +1054,7 @@
                 advance: Number(document.getElementById('advancePaid').value),
                 balance: Number(document.getElementById('totalPrice').value) - Number(document.getElementById('advancePaid').value)
             };
-            
+
             // --- ADDED WORK STATUS ---
             data.workStatus = document.getElementById('workStatus') ? document.getElementById('workStatus').value : "1";
 
@@ -1029,9 +1071,9 @@
             document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('formTitle').innerText = "New Registration";
             document.getElementById('saveBtn').innerText = "Save Order Details";
-            
+
             // --- ADDED WORK STATUS RESET ---
-            if(document.getElementById('workStatus')) document.getElementById('workStatus').value = "1";
+            if (document.getElementById('workStatus')) document.getElementById('workStatus').value = "1";
         }
 
         function getQRCodeDataUrl(url) {
@@ -1100,6 +1142,7 @@
                 💰 Bal: <b>₹${o.balance.toLocaleString()}</b>
             </div>
             <div class="order-actions">
+               
                 <button class="action-btn pdf-btn" onclick="downloadPDF('${id}')">Bill</button>
                 <button class="action-btn edit-btn" onclick="editOrder('${id}')">Edit</button>
                 <button class="action-btn" style="background: #9b59b6; color: white;" onclick="sendTrackingWA('${o.name}','${o.phone}','${id}')">Track</button>
@@ -1167,23 +1210,9 @@
                 alert("Peru, Dabbu mariyu Date... anni tappakunda ivvandi!");
             }
         }
-        // 1. సేవ్ చేసే ఫంక్షన్ (ఇది ఫారమ్ నింపినప్పుడు డేటాను సేవ్ చేస్తుంది)
-        function saveEquip() {
-            const item = document.getElementById('kitItemSelect').value;
-            const rentTo = document.getElementById('rentTo').value || "None";
-            const amt = Number(document.getElementById('rentAmount').value) || 0;
-            const status = document.getElementById('itemStatus').value;
-            const today = new Date().toISOString().split('T')[0];
 
-            database.ref('studio_equip/' + item).set({ item, rentTo, status, date: today });
 
-            if (status === 'on-shoot' && amt > 0) {
-                database.ref('kit_transactions').push({ item, rentTo, amt, date: today });
-            }
 
-            toggleForm('kitForm');
-            document.getElementById('rentTo').value = ""; document.getElementById('rentAmount').value = "";
-        }
 
         // 2. లిజనర్ (డేటాబేస్ నుండి లైవ్ గా డేటా తీసుకొచ్చి లిస్ట్ చూపిస్తుంది)
         database.ref('studio_equip').on('value', snap => {
@@ -1415,6 +1444,43 @@
             const fileName = `AV_Studio_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
             XLSX.writeFile(workbook, fileName);
         }
+        /* --- NEW JS FOR BROADCAST FEATURE START --- */
+        function prepareBroadcast() {
+            const msg = document.getElementById('promoMessage').value;
+            if (!msg) return alert("దయచేసి ముందుగా బాక్స్‌లో మెసేజ్ టైప్ చేయండి!");
+
+            const listDiv = document.getElementById('broadcastList');
+            listDiv.style.display = "block";
+
+            // ఒకే నంబర్‌కు రెండుసార్లు మెసేజ్ వెళ్లకుండా ఫిల్టర్ చేయడం
+            let uniqueCustomers = {};
+            for (let id in allOrders) {
+                const phone = allOrders[id].phone;
+                if (!uniqueCustomers[phone]) {
+                    uniqueCustomers[phone] = allOrders[id].name;
+                }
+            }
+
+            const totalCount = Object.keys(uniqueCustomers).length;
+            listDiv.innerHTML = `<p style="font-size: 13px; font-weight: bold; color: var(--dark);">మొత్తం కస్టమర్లు: ${totalCount} మంది</p>`;
+
+            for (let phone in uniqueCustomers) {
+                const name = uniqueCustomers[phone];
+                // కస్టమర్ పేరుతో పర్సనలైజ్డ్ మెసేజ్
+                const personalizedMsg = `హలో ${name} గారు,\n\n${msg}\n\nఇట్లు,\n*AV STUDIO* 📸`;
+                const encodedMsg = encodeURIComponent(personalizedMsg);
+
+                listDiv.innerHTML += `
+                <div class="list-item" style="align-items: center; background: white; border-radius: 8px; margin-bottom: 8px; border: 1px solid #eee;">
+                    <div style="line-height: 1.4;">
+                        <b style="color: var(--primary);">${name}</b> <br>
+                        <small style="color: #777;">${phone}</small>
+                    </div>
+                    <button class="action-btn wa-btn" style="padding: 8px 15px; width: auto; font-size: 13px;" onclick="window.open('https://wa.me/91${phone}?text=${encodedMsg}')">పంపు 🚀</button>
+                </div>`;
+            }
+        }
+        /* --- NEW JS FOR BROADCAST FEATURE END --- */
         function editOrder(id) {
             const o = allOrders[id]; document.getElementById('editOrderId').value = id;
             document.getElementById('custName').value = o.name; document.getElementById('custPhone').value = o.phone;
@@ -1428,9 +1494,9 @@
                     if (selectedServices.includes(c.value)) c.checked = true;
                 });
             }
-            
+
             // --- ADDED WORK STATUS EDIT ---
-            if(document.getElementById('workStatus')) document.getElementById('workStatus').value = o.workStatus || "1";
+            if (document.getElementById('workStatus')) document.getElementById('workStatus').value = o.workStatus || "1";
 
             showSection('add-order', document.querySelectorAll('.nav-item')[1]);
             document.getElementById('formTitle').innerText = "Edit Order Details";
