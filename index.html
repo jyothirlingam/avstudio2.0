@@ -105,7 +105,7 @@
 
         .collapsible-form {
             display: none;
-            background: white;
+            background: var(--card, white);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
@@ -133,7 +133,7 @@
         }
 
         .stat-card {
-            background: white;
+            background: var(--card, white);
             padding: 15px;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
@@ -164,7 +164,7 @@
         }
 
         .input-group {
-            background: white;
+            background: var(--card, white);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -228,7 +228,7 @@
         }
 
         .order-item {
-            background: white;
+            background: rgba(255, 255, 255, 0.695);
             padding: 15px;
             border-radius: 12px;
             margin-bottom: 10px;
@@ -297,7 +297,7 @@
             position: fixed;
             bottom: 0;
             width: 100%;
-            background: white;
+            background: var(--card, white);
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
@@ -359,7 +359,7 @@
         }
 
         #calendar {
-            background: white;
+            background: var(--card, white);
             padding: 10px;
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -395,7 +395,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px;
-            background: white;
+            background: var(--card, white);
             border-radius: 10px;
             margin-bottom: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -508,7 +508,7 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--card, white);
             width: 85%;
             max-width: 350px;
             padding: 25px;
@@ -574,7 +574,7 @@
         .tracking-container {
             max-width: 400px;
             margin: 40px auto;
-            background: white;
+            background: var(--card, white);
             padding: 30px 20px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -668,8 +668,8 @@
             <div class="timeline" id="trackingTimeline">
             </div>
 
-            <div style="margin-top: 30px; padding: 15px; background: #eef2ff; border-radius: 10px;">
-                <p style="margin: 0; font-size: 13px; font-weight: bold; color: var(--primary);">బ్యాలెన్స్: ₹<span
+            <div style="margin-top: 30px; padding: 15px; background: #fb0303; border-radius: 10px;">
+                <p style="margin: 0; font-size: 13px; font-weight: bold; color: var(--light);">బ్యాలెన్స్: ₹<span
                         id="trackBal"></span></p>
             </div>
         </div>
@@ -685,6 +685,38 @@
     </header>
 
     <div class="container">
+        <div id="kitForm" class="collapsible-form" style="display: none; border: 2px solid var(--secondary); background: var(--card, white); padding: 25px; box-shadow: 0 8px 20px rgba(143, 148, 251, 0.2);">
+            <h3 style="color: var(--primary); font-size: 18px; margin-top: 0; text-align: center;">📸 కిట్
+                మేనేజ్‌మెంట్</h3>
+
+            <label style="color: var(--primary);">ఏ కిట్ ఇస్తున్నారు?</label>
+            <select id="kitItemSelect" style="border-color: var(--secondary); border-width: 2px;">
+                <option value="R6 Mark II">Sony R6 Mark II</option>
+                <option value="NX200">Sony NX200</option>
+                <option value="Drone">Drone</option>
+                <option value="Live Kit">Live Kit</option>
+            </select>
+
+            <label style="color: var(--primary);">ఎవరికి ఇచ్చారు?</label>
+            <input type="text" id="rentTo" placeholder="వ్యక్తి లేదా స్టూడియో పేరు..."
+                style="border-color: var(--secondary); border-width: 2px;">
+
+            <label style="color: var(--primary);">రెంట్ అమౌంట్ (₹)</label>
+            <input type="number" id="rentAmount" placeholder="ఉదాహరణకు: 1500"
+                style="border-color: var(--secondary); border-width: 2px;">
+
+            <label style="color: var(--primary);">ప్రస్తుత స్టేటస్</label>
+            <select id="itemStatus" style="border-color: var(--secondary); border-width: 2px;">
+                <option value="in-studio">✅ స్టూడియోలో ఉంది (In-Studio)</option>
+                <option value="on-shoot">🎥 రెంట్‌కి వెళ్ళింది (On-Shoot)</option>
+                <option value="repair">🛠️ రిపేర్‌లో ఉంది (Repair)</option>
+            </select>
+
+            <button class="btn-main"
+                style="background: linear-gradient(45deg, var(--primary), var(--secondary)); font-size: 18px; margin-top: 10px;"
+                onclick="saveEquip()">అప్‌డేట్ చేయండి</button>
+        </div>
+
         <div id="home" class="section active-section">
             <div class="stats-grid">
                 <div class="stat-card">
@@ -711,6 +743,7 @@
                 <label>Customer Name</label><input type="text" id="custName" placeholder="కస్టమర్ పేరు">
                 <label>Mobile Number</label><input type="tel" id="custPhone" placeholder="98765 XXXXX">
                 <label>Event Location</label><input type="text" id="eventLoc" placeholder="ఫంక్షన్ ఎక్కడ?">
+
 
                 <label>Current Work Status</label>
                 <select id="workStatus">
@@ -763,46 +796,18 @@
 
         <div id="tools" class="section">
 
+            
             <button class="btn-main" style="background: #27ae60; margin-bottom: 20px;" onclick="exportToExcel()">📊
                 Download Excel Report</button>
 
             <div class="sticky-toggles">
-                <button class="toggle-btn btn-staff" onclick="toggleForm('staffForm')">👤 Add Staff Pay</button>
-                <button class="toggle-btn btn-kit" onclick="toggleForm('kitForm')">📸 Update Kit Rent</button>
+                <button class="toggle-btn btn-staff" onclick="toggleForm('staffForm')">👤 add Staff Pay</button>
+                <button class="toggle-btn btn-staff" onclick="showSection('history-section', this)">👤<br>History</button>
+
+
             </div>
 
-            <div id="kitForm" class="collapsible-form"
-                style="display: block; border: 2px solid var(--secondary); background: #f8f9fe; padding: 25px; box-shadow: 0 8px 20px rgba(143, 148, 251, 0.2);">
-                <h3 style="color: var(--primary); font-size: 18px; margin-top: 0; text-align: center;">📸 కిట్
-                    మేనేజ్‌మెంట్</h3>
 
-                <label style="color: var(--primary);">ఏ కిట్ ఇస్తున్నారు?</label>
-                <select id="kitItemSelect" style="border-color: var(--secondary); border-width: 2px;">
-                    <option value="R6 Mark II">Sony R6 Mark II</option>
-                    <option value="NX200">Sony NX200</option>
-                    <option value="Drone">Drone</option>
-                    <option value="Live Kit">Live Kit</option>
-                </select>
-
-                <label style="color: var(--primary);">ఎవరికి ఇచ్చారు?</label>
-                <input type="text" id="rentTo" placeholder="వ్యక్తి లేదా స్టూడియో పేరు..."
-                    style="border-color: var(--secondary); border-width: 2px;">
-
-                <label style="color: var(--primary);">రెంట్ అమౌంట్ (₹)</label>
-                <input type="number" id="rentAmount" placeholder="ఉదాహరణకు: 1500"
-                    style="border-color: var(--secondary); border-width: 2px;">
-
-                <label style="color: var(--primary);">ప్రస్తుత స్టేటస్</label>
-                <select id="itemStatus" style="border-color: var(--secondary); border-width: 2px;">
-                    <option value="in-studio">✅ స్టూడియోలో ఉంది (In-Studio)</option>
-                    <option value="on-shoot">🎥 రెంట్‌కి వెళ్ళింది (On-Shoot)</option>
-                    <option value="repair">🛠️ రిపేర్‌లో ఉంది (Repair)</option>
-                </select>
-
-                <button class="btn-main"
-                    style="background: linear-gradient(45deg, var(--primary), var(--secondary)); font-size: 18px; margin-top: 10px;"
-                    onclick="saveEquip()">అప్‌డేట్ చేయండి</button>
-            </div>
 
             <div id="staffForm" class="collapsible-form">
                 <h3>Add Staff Payment</h3>
@@ -910,7 +915,7 @@
         <button class="nav-item" onclick="showSection('add-order', this)">➕<br>Add</button>
         <button class="nav-item" onclick="showSection('calendar-section', this)">📅<br>Calendar</button>
         <button class="nav-item" onclick="showSection('tools', this)">🛠️<br>Tools</button>
-        <button class="nav-item" onclick="showSection('history-section', this)">👤<br>History</button>
+        <button class="nav-item" onclick="toggleForm('kitForm')">📸 <br>My Kit</button>
         <button class="nav-item" onclick="showSection('accounts', this)">📊<br>Accounts</button>
     </div>
 
@@ -1143,7 +1148,7 @@
             </div>
             <div class="order-actions">
                
-                <button class="action-btn pdf-btn" onclick="downloadPDF('${id}')">Bill</button>
+                <button class="action-btn pdf-btn" onclick="downloadPDF('${id}')">invoice</button>
                 <button class="action-btn edit-btn" onclick="editOrder('${id}')">Edit</button>
                 <button class="action-btn" style="background: #9b59b6; color: white;" onclick="sendTrackingWA('${o.name}','${o.phone}','${id}')">Track</button>
                 <button class="action-btn del-btn" onclick="deleteOrder('${id}')">Del</button>
@@ -1166,24 +1171,28 @@
             for (let id in allStaff) list.innerHTML += `<div class="list-item"><span><b>${allStaff[id].name}</b> (₹${allStaff[id].sal})</span><span onclick="if(confirm('ఈ పేమెంట్ వివరాలను డిలీట్ చేయాలా?')) database.ref('studio_staff/${id}').remove()" style="color:red; cursor:pointer; padding:5px;">✖</span></div>`;
             renderCashbook();
         });
+        // 1. అప్‌డేట్స్ ని కంట్రోల్ చేయడానికి ఒక టైమర్ వేరియబుల్
+        let updateTimer;
 
-        database.ref('studio_equip').on('value', snap => {
-            allEquip = snap.val() || {};
-            const list = document.getElementById('equipList'); list.innerHTML = "";
-            ["R6 Mark II", "NX200", "Drone", "Live Kit"].forEach(name => {
-                const kit = allEquip[name] || { item: name, status: 'in-studio', rentTo: '-' };
-                list.innerHTML += `<div class="list-item"><span><b>${kit.item}</b></span><span>${kit.status} (${kit.rentTo})</span></div>`;
-            });
-        });
+        function triggerUIUpdates() {
+            clearTimeout(updateTimer); // పాత కౌంట్ డౌన్ ఉంటే ఆపేస్తుంది
 
+            // 200 మిల్లీసెకన్ల ఆగి అప్పుడు ఫంక్షన్స్ రన్ చేస్తుంది
+            updateTimer = setTimeout(() => {
+                renderCashbook();
+                generateMonthlyReport();
+            }, 200);
+        }
+
+        // 2. మీ లిజనర్స్
         database.ref('kit_transactions').on('value', snap => {
             allKitTransactions = snap.val() || {};
-            renderCashbook(); generateMonthlyReport();
+            triggerUIUpdates(); // డైరెక్ట్ గా కాకుండా ఈ ఫంక్షన్ కాల్ చేస్తాం
         });
 
         database.ref('studio_expenses').on('value', snap => {
             allExpenses = snap.val() || {};
-            renderCashbook(); generateMonthlyReport();
+            triggerUIUpdates(); // ఇక్కడ కూడా అదే ఫంక్షన్ 
         });
 
         function saveStaff() {
@@ -1211,9 +1220,6 @@
             }
         }
 
-
-
-
         // 2. లిజనర్ (డేటాబేస్ నుండి లైవ్ గా డేటా తీసుకొచ్చి లిస్ట్ చూపిస్తుంది)
         database.ref('studio_equip').on('value', snap => {
             allEquip = snap.val() || {};
@@ -1238,7 +1244,7 @@
 
                 // కిట్ కార్డు డిజైన్
                 list.innerHTML += `
-            <div class="list-item" style="background: white; border-left: 5px solid ${statusColor}; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+            <div class="list-item" style="background: var(--card, white); border-left: 5px solid ${statusColor}; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                     <span style="font-weight: 600; font-size: 15px; color: var(--dark);">${kit.item}</span>
                     <span style="font-size: 12px; color: #666;">${statusText}</span>
@@ -1471,7 +1477,7 @@
                 const encodedMsg = encodeURIComponent(personalizedMsg);
 
                 listDiv.innerHTML += `
-                <div class="list-item" style="align-items: center; background: white; border-radius: 8px; margin-bottom: 8px; border: 1px solid #eee;">
+                <div class="list-item" style="align-items: center; background: var(--card, white); border-radius: 8px; margin-bottom: 8px; border: 1px solid #eee;">
                     <div style="line-height: 1.4;">
                         <b style="color: var(--primary);">${name}</b> <br>
                         <small style="color: #777;">${phone}</small>
@@ -1487,6 +1493,8 @@
             document.getElementById('orderDate').value = o.date; document.getElementById('totalPrice').value = o.total;
             document.getElementById('advancePaid').value = o.advance;
             document.getElementById('eventLoc').value = o.location || "";
+            document.getElementById('eventType').value = o.type || "Wedding";
+            document.getElementById('driveLink').value = o.drive || "";
             document.querySelectorAll('.deliverable').forEach(c => c.checked = false);
             if (o.services) {
                 const selectedServices = o.services.split(', ');
